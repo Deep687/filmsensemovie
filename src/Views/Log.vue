@@ -86,76 +86,69 @@
 <script>
 import { ref } from 'vue';
 import { validData } from '../utils/Valid';
-
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import {auth} from '../utils/firebase'
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { auth } from '../utils/firebase';
 import { useRouter } from 'vue-router';
-
-
+import { useUserStore } from '../stores/userStore';
 
 export default {
-  
   setup() {
     const isLogin = ref(true);
     const name = ref('');
     const email = ref('');
     const password = ref('');
     const errorMessage = ref('');
- 
- const router = useRouter();
+    
+    const userStore = useUserStore();
+    const router = useRouter();
+
     const toggleForm = () => {
       isLogin.value = !isLogin.value;
       errorMessage.value = '';
     };
 
-
     const handleSubmit = () => {
-  const message = validData(isLogin.value, name.value, email.value, password.value);
-  if (message) {
-    errorMessage.value = message;
-    return;
-  }
+      const message = validData(isLogin.value, name.value, email.value, password.value);
+      if (message) {
+        errorMessage.value = message;
+        return;
+      }
 
+      if (isLogin.value) {
+        // Sign In
+        signInWithEmailAndPassword(auth, email.value, password.value)
+          .then((userCredential) => {
+            const user = userCredential.user;
+            userStore.addUser(user);
+            errorMessage.value = '';
+            router.push('/browse');
+          })
+          .catch((error) => {
+            errorMessage.value = error.message;
+          });
+      } else {
+        // Sign Up
+        createUserWithEmailAndPassword(auth, email.value, password.value)
+          .then((userCredential) => {
+            const user = userCredential.user;
+            userStore.addUser(user);
 
-
-  if (isLogin.value) {
-    
-    signInWithEmailAndPassword(auth, email.value, password.value)
-      .then((userCredential) => {
-       
-        const user = userCredential.user;
-        console.log(user)
-    
-  router.push('/browse');
-
-
-
-      })
-      .catch((error) => {
-        errorMessage.value = error.message;
-      });
-
-     
-
-     
-  } else {
-  
-    createUserWithEmailAndPassword(auth,email.value, password.value)
-      .then((userCredential) => {
-      
-        const user = userCredential.user;
-        console.log(user);
-
-      })
-      .catch((error) => {
-        errorMessage.value = error.message;
-      });
-  }
-
-  errorMessage.value = '';
- 
-};
-
+            // Update profile with user's name
+            updateProfile(auth.currentUser, {
+              displayName: name.value,
+              photoURL: "https://example.com/user/profile.jpg"  // You can adjust this to the user's actual photo URL if needed
+            }).then(() => {
+              errorMessage.value = '';
+              router.push('/browse');
+            }).catch((error) => {
+              errorMessage.value = error.message;
+            });
+          })
+          .catch((error) => {
+            errorMessage.value = error.message;
+          });
+      }
+    };
 
     return {
       isLogin,
@@ -164,7 +157,7 @@ export default {
       password,
       errorMessage,
       toggleForm,
-      handleSubmit
+      handleSubmit,
     };
   }
 };

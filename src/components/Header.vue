@@ -1,14 +1,47 @@
-<script>
-
-</script>
-
 <template>
-  <div class="relative z-10 p-1 xs:p-2 sm:p-2 md:p-2 lg:p-2 xl:p-2 flex justify-between items-center w-full h-16 bg-gradient-to-br from-gray-900 to-black bg-opacity-80">
-    <h1 class="p-4 xs:p-6 sm:p-6 md:p-8 lg:p-8 xl:p-8 text-base xs:text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-pink-500 font-sans">
+  <div class="relative z-10 p-4 flex  sm:flex-row justify-between items-center w-full h-16 bg-gradient-to-br from-gray-900 to-black bg-opacity-80 shadow-lg rounded-b-lg">
+    <h1 class="text-xl sm:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-pink-500">
       FilmSense
     </h1>
-    <button class="text-white p-1 m-1 md:p-2 md:mx-2 bg-red-600 rounded-3xl font-semibold text-sm md:text-lg" >
-Sign Out 
+    <p class="text-orange-400 text-base sm:text-lg">
+      Hello <span class="text-white font-semibold">{{ userStore.user?.displayName || 'Guest' }}</span>
+    </p>
+    <button 
+      @click="handleSignOut" 
+      class="bg-red-600 text-white font-semibold text-sm sm:text-base px-4 py-2 rounded-full hover:bg-red-700 transition duration-300 mt-2 sm:mt-0"
+    >
+      Sign Out
     </button>
   </div>
 </template>
+
+<script>
+import { signOut } from "firebase/auth";
+import { auth } from "../utils/firebase"; 
+import { useRouter } from 'vue-router'; 
+import { useUserStore } from "../stores/userStore";
+
+export default {
+  setup() {
+    const router = useRouter();
+    const userStore = useUserStore();
+console.log(userStore.user)
+    const handleSignOut = async () => {
+      try {
+        await signOut(auth);
+        router.push('/');
+      } catch (error) {
+        console.error('Sign-out error: ', error);
+      }
+    };
+
+    return {
+      handleSignOut,
+      userStore,
+    };
+  }
+};
+</script>
+
+<style scoped>
+</style>
