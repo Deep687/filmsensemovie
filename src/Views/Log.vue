@@ -85,7 +85,7 @@
 
 <script>
 import { ref } from 'vue';
-import { validData } from '../utils/Valid';
+import { validData } from '../utils/Validations';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from '../utils/firebase';
 import { useRouter } from 'vue-router';
@@ -133,10 +133,10 @@ export default {
             const user = userCredential.user;
             userStore.addUser(user);
 
-            // Update profile with user's name
+
             updateProfile(auth.currentUser, {
               displayName: name.value,
-              photoURL: "https://example.com/user/profile.jpg"  // You can adjust this to the user's actual photo URL if needed
+              photoURL: "https://example.com/user/profile.jpg" 
             }).then(() => {
               errorMessage.value = '';
               router.push('/browse');
