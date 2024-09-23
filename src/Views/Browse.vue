@@ -32,16 +32,16 @@ const fetchUpcomingMovieList = async () => {
   };
 
   try {
-    // Fetch data from TMDB API for upcoming movies
+
     const res = await fetch('https://api.themoviedb.org/3/movie/upcoming?language=en-US&page=1', options);
     const data = await res.json();
-    response.value = data.results;  // Store the fetched movie list in the response
+    response.value = data.results; 
   } catch (error) {
     console.error('Fetch error: ', error);
   }
 };
 
-// Fetch the movie data when the component is mounted
+
 onMounted(() => {
   fetchUpcomingMovieList();
 });
