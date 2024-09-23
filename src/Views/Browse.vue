@@ -14,6 +14,7 @@
   </div>
 </template>
 
+
 <script setup>
 import Header from '../components/Header.vue';
 import { onMounted, ref } from 'vue';
@@ -26,20 +27,23 @@ const fetchUpcomingMovieList = async () => {
     method: 'GET',
     headers: {
       accept: 'application/json',
-      Authorization: 'Bearer YOUR_TOKEN_HERE', 
+      Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwNTA3YTExYjQzZjJlYzhmNWE4M2JkOTMyNWQ3MjViMCIsIm5iZiI6MTcyNjgzMzg0NS40NTQxMTIsInN1YiI6IjY2ZWQ2MzBkMTkyM2ZlMDMyN2FkZDJmNCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.pVxg9z-o2xqXfaCs6WU7HHhGkDiIp41g27mH-9ubCXM',
     },
   };
 
   try {
+    // Fetch data from TMDB API for upcoming movies
     const res = await fetch('https://api.themoviedb.org/3/movie/upcoming?language=en-US&page=1', options);
     const data = await res.json();
-    response.value = data.results; // Set response to the results array
+    response.value = data.results;  // Store the fetched movie list in the response
   } catch (error) {
     console.error('Fetch error: ', error);
   }
 };
 
+// Fetch the movie data when the component is mounted
 onMounted(() => {
   fetchUpcomingMovieList();
 });
 </script>
+
