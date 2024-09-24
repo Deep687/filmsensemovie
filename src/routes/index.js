@@ -1,11 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Log from '../Views/Log.vue';
-import Browse from '../Views/Browse.vue';
+import Home from '../Views/Home.vue';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 const routes = [
   { path: '/', component: Log, meta: { requiresGuest: true } }, 
-  { path: '/browse', component: Browse, meta: { requiresAuth: true } }
+  { path: '/home', component: Home, meta: { requiresAuth: true } }
 ];
 
 const router = createRouter({
@@ -26,7 +26,7 @@ router.beforeEach((to, from, next) => {
       if (to.matched.some(record => record.meta.requiresAuth) && !user) {
         next('/'); 
       } else if (to.matched.some(record => record.meta.requiresGuest) && user) {
-        next('/browse');
+        next('/home');
       } else {
         next(); 
       }

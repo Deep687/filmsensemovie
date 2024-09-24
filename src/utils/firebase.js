@@ -9,7 +9,7 @@ const firebaseConfig = {
   storageBucket: "filmsense-a7c97.appspot.com",
   messagingSenderId: "1018418110458",
   appId: "1:1018418110458:web:a096b5b5d1cc0bc07bce43",
-  measurementId: "G-TDXT3PZY5D"
+  measurementId: "G-TDXT3PZY5D",
 };
 
 const app = initializeApp(firebaseConfig);

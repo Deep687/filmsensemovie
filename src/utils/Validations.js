@@ -1,4 +1,4 @@
-export const validData = (isSignIn, name, email, password) => {
+export const validations = (isSignIn, name, email, password) => {
     const isNameValid = /^[A-Za-z][A-Za-z0-9_]{7,29}$/.test(name);
   
     const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
