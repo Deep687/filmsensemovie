@@ -108,7 +108,7 @@ export default {
     };
 
     const handleSubmit = () => {
-      const message = validData(isLogin.value, name.value, email.value, password.value);
+      const message = validations(isLogin.value, name.value, email.value, password.value);
       if (message) {
         errorMessage.value = message;
         return;
