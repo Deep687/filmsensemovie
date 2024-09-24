@@ -121,7 +121,7 @@ export default {
             const user = userCredential.user;
             userStore.addUser(user);
             errorMessage.value = '';
-            router.push('/browse');
+            router.push('/home');
           })
           .catch((error) => {
             errorMessage.value = error.message;
@@ -139,7 +139,7 @@ export default {
               photoURL: "https://example.com/user/profile.jpg" 
             }).then(() => {
               errorMessage.value = '';
-              router.push('/browse');
+              router.push('/home');
             }).catch((error) => {
               errorMessage.value = error.message;
             });

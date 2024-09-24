@@ -1,4 +1,4 @@
- const API_OPTIONS = {
+ const API_HEADERS = {
   method: 'GET',
   headers: {
     accept: 'application/json',

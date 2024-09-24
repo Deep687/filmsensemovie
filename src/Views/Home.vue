@@ -17,7 +17,7 @@
             <UpcomingMovieCard :movie="movie" class="w-full" />
           </div>
         </SwiperSlide>
-      </Swiper> z
+      </Swiper> 
     </div>
 
     <div class="text-white m-7 text-lg md:text-2xl ml-0 md:ml-16 mb-4">
@@ -62,7 +62,6 @@
         </SwiperSlide>
       </Swiper> 
       </div>
-      
     </div>
     <div class="">
       <div class="text-white m-7 text-lg md:text-2xl ml-0 md:ml-16">
@@ -77,7 +76,7 @@
           1280: { slidesPerView: 5 }, 
           1536: { slidesPerView: 5 } 
         }"
-   
+
       >
         <SwiperSlide v-for="movie in popularMoviesList" :key="movie.id">
           <div class="flex justify-center">
@@ -85,12 +84,10 @@
           </div>
         </SwiperSlide>
       </Swiper> 
-      </div>
-      
+      </div> 
     </div>
   </div>
 </template>
-
 <script setup>
 import Header from '../components/Header.vue';
 import { onMounted, ref } from 'vue';
@@ -106,7 +103,6 @@ const response = ref([]);
 const { nowPlayingMoviesList, fetchNowPlayingMovies } = useNowPlayingMovies();
 const {topRatedMoviesList, fetchTopRatedMovies } = useTopRatedMoviesList();
 const {popularMoviesList,fetchPopularMovies} = usePopularMoviesList();
-
 const fetchUpcomingMovieList = async () => {
   try {
     const res = await fetch('https://api.themoviedb.org/3/movie/upcoming?language=en-US&page=1', API_OPTIONS);
@@ -117,10 +113,10 @@ const fetchUpcomingMovieList = async () => {
   }
 };
 
-onMounted(() => {
+onMounted(() =>{
   fetchUpcomingMovieList();
   fetchNowPlayingMovies();
- fetchTopRatedMovies();
- fetchPopularMovies();
+  fetchTopRatedMovies();
+  fetchPopularMovies();
 });
 </script>
