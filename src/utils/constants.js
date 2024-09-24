@@ -6,4 +6,4 @@
   }
 };
 
-export default API_OPTIONS;
+export default API_HEADERS;

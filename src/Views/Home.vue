@@ -95,7 +95,7 @@ import UpcomingMovieCard from '../components/UpcomingMovieCard.vue';
 import MovieCards from '../utils/MovieCards.vue';
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import 'swiper/swiper-bundle.css';
-import API_OPTIONS from '../utils/constants';
+import API_HEADERS from '../utils/constants';
 import { useNowPlayingMovies } from '../utils/fetchNowPlayingMovies';
 import { useTopRatedMoviesList } from '../utils/fetchTopRatedMovies';
 import { usePopularMoviesList } from '../utils/fetchPopularMovies';
@@ -105,7 +105,7 @@ const {topRatedMoviesList, fetchTopRatedMovies } = useTopRatedMoviesList();
 const {popularMoviesList,fetchPopularMovies} = usePopularMoviesList();
 const fetchUpcomingMovieList = async () => {
   try {
-    const res = await fetch('https://api.themoviedb.org/3/movie/upcoming?language=en-US&page=1', API_OPTIONS);
+    const res = await fetch('https://api.themoviedb.org/3/movie/upcoming?language=en-US&page=1',API_HEADERS);
     const data = await res.json();
     response.value = data.results; 
   } catch (error) {
