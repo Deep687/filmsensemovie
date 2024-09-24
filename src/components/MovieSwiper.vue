@@ -19,10 +19,10 @@
         </SwiperSlide>
       </Swiper>
     </div>
-  </template>
+</template>
   
   <script setup>
-  import { defineProps } from 'vue';
+  import { defineProps } from 'vue'; 
   import { Swiper, SwiperSlide } from 'swiper/vue';
   import 'swiper/swiper-bundle.css';
   import MovieCards from '../utils/MovieCards.vue';
