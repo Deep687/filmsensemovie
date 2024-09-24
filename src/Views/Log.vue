@@ -85,7 +85,7 @@
 
 <script>
 import { ref } from 'vue';
-import { validData } from '../utils/Validations';
+import { validations} from '../utils/Validations';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from '../utils/firebase';
 import { useRouter } from 'vue-router';

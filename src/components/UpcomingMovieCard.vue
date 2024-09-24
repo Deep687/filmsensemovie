@@ -1,6 +1,6 @@
 <template>
-  <div class="movieCard flex flex-col md:flex-row w-full bg-black text-white shadow-lg border-2 border-teal-400 m-2 p-2">
-    <div class="imgCard flex w-full justify-center p-4">
+  <div class="movieCard flex flex-col md:flex-row w-full bg-black text-white shadow-lg border-2 border-teal-400 ">
+    <div class="imgCard flex w-full justify-center p-2">
       <img
         :src="`${baseImageUrl}${movie.poster_path}`"
         alt="Movie Poster"
