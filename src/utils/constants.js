@@ -1,4 +1,4 @@
- const API_HEADERS = {
+export const API_HEADERS = {
   method: 'GET',
   headers: {
     accept: 'application/json',
@@ -6,4 +6,4 @@
   }
 };
 
-export default API_HEADERS;
+export const API_KEY = '0507a11b43f2ec8f5a83bd9325d725b0';

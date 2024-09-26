@@ -1,4 +1,4 @@
-import API_HEADERS from "./constants";
+import { API_HEADERS } from "./constants";
 export const fetchMovieImages = async (movieImages,movieId) => {
     try {
       const response = await fetch(`https://api.themoviedb.org/3/movie/${movieId}/images`,API_HEADERS);

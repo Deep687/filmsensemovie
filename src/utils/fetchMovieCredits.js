@@ -1,4 +1,4 @@
-import API_HEADERS from "./constants";
+import { API_HEADERS } from "./constants";
 import axios from "axios";
 
 export const fetchMovieCredits = async (movieId) => {

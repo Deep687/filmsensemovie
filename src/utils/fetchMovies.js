@@ -1,4 +1,4 @@
-import API_HEADERS from '../utils/constants'
+import { API_HEADERS } from "./constants";
   
   export const fetchMovies = async (url, list) => {
     try {

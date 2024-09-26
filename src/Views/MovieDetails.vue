@@ -11,15 +11,23 @@
       </div>
 
       <div class="flex-1 md:ml-4">
-        <h1 class="text-3xl md:text-5xl font-bold mb-2">{{ movieDetails.title }}</h1>
+        <h1 class="text-3xl md:text-5xl font-bold mb-2">
+          {{ movieDetails.title }}
+        </h1>
         <p class="mt-1 text-lg leading-relaxed">{{ movieDetails.tagline }}</p>
-        <p class="text-gray-400 text-lg mt-1">Release Date: {{ movieDetails.release_date }}</p>
+        <p class="text-gray-400 text-lg mt-1">
+          Release Date: {{ movieDetails.release_date }}
+        </p>
         <p class="mt-2 text-lg leading-relaxed">{{ movieDetails.overview }}</p>
-        
+
         <div class="mt-4">
           <h2 class="text-xl font-semibold">Genres</h2>
           <div class="flex flex-wrap gap-2 mt-2">
-            <div v-for="genre in movieDetails.genres" :key="genre.id" class="text-lg bg-gray-800 rounded px-2 py-1">
+            <div
+              v-for="genre in movieDetails.genres"
+              :key="genre.id"
+              class="text-lg bg-gray-800 rounded px-2 py-1"
+            >
               {{ genre.name }}
             </div>
           </div>
@@ -30,10 +38,16 @@
           <p class="text-lg">{{ movieDetails.vote_average }} / 10</p>
         </div>
 
-        <h2 class="text-xl md:text-3xl font-semibold mt-4 ml-0 md:ml-12">Cast</h2>
+        <h2 class="text-xl md:text-3xl font-semibold mt-4 ml-0 md:ml-12">
+          Cast
+        </h2>
 
         <div class="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-5 gap-2 mt-2">
-          <div v-for="member in castMembers" :key="member.id" class="text-center">
+          <div
+            v-for="member in displayedCastMembers"
+            :key="member.id"
+            class="text-center"
+          >
             <img
               v-if="member.profile_path"
               :src="`https://image.tmdb.org/t/p/w185/${member.profile_path}`"
@@ -59,7 +73,7 @@ import { fetchMovieCredits } from "../utils/fetchMovieCredits";
 const movieDetails = ref({});
 const movieImages = ref([]);
 const castMembers = ref([]);
-const displayedCastMembers = ref([]); 
+const displayedCastMembers = ref([]);
 const errorMessage = ref(null);
 const route = useRoute();
 
@@ -68,12 +82,11 @@ const movieId = route.params.id;
 const fetchImages = async () => {
   try {
     await fetchMovieImages(movieImages, movieId);
-    console.log(movieImages.value);
   } catch (err) {
     errorMessage.value = "Failed to fetch movie images.";
   }
 };
-  
+
 const fetchDetails = async () => {
   try {
     await fetchMovieDetails(movieDetails, movieId);
@@ -83,9 +96,9 @@ const fetchDetails = async () => {
 };
 
 const fetchCast = async () => {
-  try { 
+  try {
     const castData = await fetchMovieCredits(movieId);
-    displayedCastMembers.value = castData.cast.slice(0, 5); 
+    displayedCastMembers.value = castData.cast.slice(0, 5);
   } catch (err) {
     console.error("Failed to fetch data:", err);
   }

@@ -2,7 +2,7 @@
 
   <div class="bg-black p-4">
   
-    <h1 class="text-white m-7 text-lg md:text-2xl ml-0 md:ml-16">
+    <h1 class="text-white m-7 text-lg md:text-2xl ml-0 md:ml-16 font-semibold">
       Upcoming Movies
     </h1>
     <div class=" w-full">
