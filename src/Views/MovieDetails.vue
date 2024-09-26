@@ -14,6 +14,13 @@
         <h1 class="text-3xl md:text-5xl font-bold mb-2">
           {{ movieDetails.title }}
         </h1>
+        <button 
+          @click="addMovieToWatchList" 
+          class="mt-2 bg-green-600 text-white px-4 py-2 rounded"
+          :disabled="isInWatchlist" 
+        >
+          {{ isInWatchlist ? 'Added to Watchlist' : 'Add to Watchlist' }}
+        </button>
         <p class="mt-1 text-lg leading-relaxed">{{ movieDetails.tagline }}</p>
         <p class="text-gray-400 text-lg mt-1">
           Release Date: {{ movieDetails.release_date }}
@@ -65,48 +72,102 @@
 
 <script setup>
 import { useRoute } from "vue-router";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { fetchMovieImages } from "../utils/fetchMovieImages";
 import { fetchMovieDetails } from "../utils/fetchMovieDetails";
 import { fetchMovieCredits } from "../utils/fetchMovieCredits";
+import { useUserStore } from "../stores/userStore";
+import { addToWatchList } from "../utils/addToWatchList";
+import { db } from "../utils/firebase"; 
+import { collection, getDocs } from 'firebase/firestore';
 
+const userStore = useUserStore();
 const movieDetails = ref({});
 const movieImages = ref([]);
-const castMembers = ref([]);
 const displayedCastMembers = ref([]);
+const watchlist = ref([]);
 const errorMessage = ref(null);
 const route = useRoute();
+const movieId = ref(null);
+const isInWatchlist = ref(false);
 
-const movieId = route.params.id;
+const fetchData = async (id) => {
+  await fetchDetails(id);
+  await fetchImages(id);
+  await fetchCast(id);
+  await fetchWatchList(userStore.user?.uid); 
+};
 
-const fetchImages = async () => {
+const fetchImages = async (id) => {
   try {
-    await fetchMovieImages(movieImages, movieId);
+    await fetchMovieImages(movieImages, id);
   } catch (err) {
     errorMessage.value = "Failed to fetch movie images.";
   }
 };
 
-const fetchDetails = async () => {
+const fetchDetails = async (id) => {
   try {
-    await fetchMovieDetails(movieDetails, movieId);
+    await fetchMovieDetails(movieDetails, id);
   } catch (err) {
     errorMessage.value = "Failed to fetch movie details.";
   }
 };
 
-const fetchCast = async () => {
+const fetchCast = async (id) => {
   try {
-    const castData = await fetchMovieCredits(movieId);
+    const castData = await fetchMovieCredits(id);
     displayedCastMembers.value = castData.cast.slice(0, 5);
   } catch (err) {
     console.error("Failed to fetch data:", err);
   }
 };
 
+
+
+
+
+const addMovieToWatchList = async () => {
+  if (userStore.user) {
+
+    const isAlreadyInWatchlist = watchlist.value.some(movie => movie.movieId === movieId.value);
+    if (isAlreadyInWatchlist) {
+      alert("This movie is already in your watchlist.");
+      return; 
+    }
+    await addToWatchList(userStore.user.uid, movieId.value);
+    isInWatchlist.value = true; 
+  } else {
+    alert("Please log in to add movies to your watchlist.");
+  }
+};
+
+const fetchWatchList = async (userId) => {
+  if (!userId) return; 
+  try {
+    const watchlistRef = collection(db, `users/${userId}/watchlist`);
+    const watchlistSnapshot = await getDocs(watchlistRef);
+    watchlist.value = watchlistSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    
+  
+    isInWatchlist.value = watchlist.value.some(movie => movie.movieId === movieId.value);
+    
+    console.log(watchlist.value);
+  } catch (error) {
+    console.error("Error fetching watchlist: ", error);
+  }
+};
+
 onMounted(() => {
-  fetchDetails();
-  fetchImages();
-  fetchCast();
+  movieId.value = route.params.id; 
+  fetchData(movieId.value);
+});
+
+watch(() => route.params.id, (newMovieId) => {
+  movieId.value = newMovieId; 
+  fetchData(movieId.value);
 });
 </script>
