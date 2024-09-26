@@ -15,7 +15,7 @@
         <p class="mt-1 text-lg leading-relaxed">{{ movieDetails.tagline }}</p>
         <p class="text-gray-400 text-lg mt-1">Release Date: {{ movieDetails.release_date }}</p>
         <p class="mt-2 text-lg leading-relaxed">{{ movieDetails.overview }}</p>
-
+        
         <div class="mt-4">
           <h2 class="text-xl font-semibold">Genres</h2>
           <div class="flex flex-wrap gap-2 mt-2">
@@ -33,7 +33,7 @@
         <h2 class="text-xl md:text-3xl font-semibold mt-4 ml-0 md:ml-12">Cast</h2>
 
         <div class="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-5 gap-2 mt-2">
-          <div v-for="member in castSlice5" :key="member.id" class="text-center">
+          <div v-for="member in castMembers" :key="member.id" class="text-center">
             <img
               v-if="member.profile_path"
               :src="`https://image.tmdb.org/t/p/w185/${member.profile_path}`"
@@ -58,9 +58,9 @@ import { fetchMovieCredits } from "../utils/fetchMovieCredits";
 
 const movieDetails = ref({});
 const movieImages = ref([]);
-const cast = ref([]);
-const castSlice5 = ref([]); 
-const error = ref(null);
+const castMembers = ref([]);
+const displayedCastMembers = ref([]); 
+const errorMessage = ref(null);
 const route = useRoute();
 
 const movieId = route.params.id;
@@ -68,26 +68,26 @@ const movieId = route.params.id;
 const fetchImages = async () => {
   try {
     await fetchMovieImages(movieImages, movieId);
+    console.log(movieImages.value);
   } catch (err) {
-    error.value = "Failed to fetch movie images.";
+    errorMessage.value = "Failed to fetch movie images.";
   }
 };
-
+  
 const fetchDetails = async () => {
   try {
     await fetchMovieDetails(movieDetails, movieId);
   } catch (err) {
-    error.value = "Failed to fetch movie details.";
+    errorMessage.value = "Failed to fetch movie details.";
   }
 };
 
 const fetchCast = async () => {
   try { 
     const castData = await fetchMovieCredits(movieId);
-    cast.value = castData.cast; 
-    castSlice5.value = cast.value.slice(0, 5); 
-  } catch (error) {
-    console.error("Failed to fetch data:", error);
+    displayedCastMembers.value = castData.cast.slice(0, 5); 
+  } catch (err) {
+    console.error("Failed to fetch data:", err);
   }
 };
 

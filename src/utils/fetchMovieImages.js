@@ -11,6 +11,6 @@ export const fetchMovieImages = async (movieImages,movieId) => {
       movieImages.value = data; 
      
     } catch (error) {
-      movieImages.value=error;
+      movieImages.value= error;
     }
   };

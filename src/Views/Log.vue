@@ -1,8 +1,6 @@
 <template>
   <div class="min-h-screen flex flex-col bg-gradient-to-br from-gray-900 to-black font-sans text-gray-300">
-    <h1 class="p-4 xs:p-6 sm:p-6 md:p-8 lg:p-8 xl:p-8 text-base xs:text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-pink-500 font-sans">
-      FilmSense
-    </h1>
+   
     <div class="flex-grow flex items-center justify-center px-2 sm:px-4 lg:px-6">
       <div class="w-full max-w-[90%] sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl bg-gray-800 bg-opacity-50 backdrop-blur-xl rounded-2xl p-4 sm:p-6 md:p-8 shadow-2xl">
         <h2 class="text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6 text-white text-center">

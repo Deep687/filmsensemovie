@@ -1,7 +1,7 @@
 <template>
 
   <div class="bg-black p-4">
-    <Header />
+  
     <h1 class="text-white m-7 text-lg md:text-2xl ml-0 md:ml-16">
       Upcoming Movies
     </h1>
@@ -28,7 +28,7 @@
 </template>
 
 <script setup>
-import Header from '../components/Header.vue';
+
 import { onMounted, ref } from 'vue';
 import UpcomingMovieCard from '../components/UpcomingMovieCard.vue';
 import MovieSwiper from '../components/MovieSwiper.vue';
@@ -47,8 +47,9 @@ fetchMovies('https://api.themoviedb.org/3/movie/upcoming?language=en-US&page=1',
  fetchMovies('https://api.themoviedb.org/3/movie/top_rated?language=en-US&page=1', topRatedMoviesList),
  fetchMovies('https://api.themoviedb.org/3/movie/popular?language=en-US&page=1', popularMoviesList)])
  .then((results)=>{
-  console.log(results);
+
 })
 });
+
 </script>
 
