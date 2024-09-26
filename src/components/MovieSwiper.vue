@@ -1,6 +1,6 @@
 <template>
-    <div class="text-white m-7 text-lg md:text-2xl ml-0 md:ml-16 mb-4">
-      <h1>{{ title }}</h1>
+    <div class="flex-row text-white m-7 text-lg md:text-2xl ml-0 md:ml-16 mb-4 md:mb-7">
+      <h1 class=" mb-2 md:mb-7 lg:mb-10 ml-2 md:ml-6 text-lg md:text-2xl font-semibold">{{ title }}</h1>
       <Swiper
         :space-between="20"
         class="mySwiper"
@@ -13,8 +13,12 @@
         }"
       >
         <SwiperSlide v-for="movie in movieList" :key="movie.id">
+          
           <div class="flex justify-center">
+            <router-link :to="{ name: 'movieDetails', params: { id: movie.id } }">
             <MovieCards :data="movie" />
+            </router-link>
+           
           </div>
         </SwiperSlide>
       </Swiper>

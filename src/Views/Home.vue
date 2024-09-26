@@ -11,9 +11,11 @@
         :space-between="20"
         class="mySwiper"
       >
-        <SwiperSlide v-for="movie in response" :key="movie.id" class=" w-full">
+        <SwiperSlide v-for="movie in response" :key="movie.id" class="w-full">
           <div class="flex-row justify-center w-full">
-            <UpcomingMovieCard :movie="movie" class="" />
+            <router-link :to="{ name: 'movieDetails', params: { id: movie.id } }">
+              <UpcomingMovieCard :movie="movie" />
+            </router-link>
           </div>
         </SwiperSlide>
       </Swiper>
