@@ -10,21 +10,13 @@
         />
       </div>
 
-      <div class="flex-1 md:ml-4">
-        <h1 class="text-3xl md:text-5xl font-bold mb-2">
-          {{ movieDetails.title }}
-        </h1>
-        <button 
-          @click="addMovieToWatchList" 
-          class="mt-2 bg-green-600 text-white px-4 py-2 rounded"
-          :disabled="isInWatchlist" 
-        >
-          {{ isInWatchlist ? 'Added to Watchlist' : 'Add to Watchlist' }}
+      <div v-if="movieDetails" class="flex-1 md:ml-4">
+        <h1 class="text-3xl md:text-5xl font-bold mb-2">{{ movieDetails.title }}</h1>
+        <button @click="handleAddBtnSubmit" class="mt-2 bg-green-600 text-white px-4 py-2 rounded">
+          {{ isAlreadyAdded ? "Added" : "Add" }}
         </button>
         <p class="mt-1 text-lg leading-relaxed">{{ movieDetails.tagline }}</p>
-        <p class="text-gray-400 text-lg mt-1">
-          Release Date: {{ movieDetails.release_date }}
-        </p>
+        <p class="text-gray-400 text-lg mt-1">Release Date: {{ movieDetails.release_date }}</p>
         <p class="mt-2 text-lg leading-relaxed">{{ movieDetails.overview }}</p>
 
         <div class="mt-4">
@@ -45,16 +37,9 @@
           <p class="text-lg">{{ movieDetails.vote_average }} / 10</p>
         </div>
 
-        <h2 class="text-xl md:text-3xl font-semibold mt-4 ml-0 md:ml-12">
-          Cast
-        </h2>
-
+        <h2 class="text-xl md:text-3xl font-semibold mt-4 ml-0 md:ml-12">Cast</h2>
         <div class="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-5 gap-2 mt-2">
-          <div
-            v-for="member in displayedCastMembers"
-            :key="member.id"
-            class="text-center"
-          >
+          <div v-for="member in displayedCastMembers" :key="member.id" class="text-center">
             <img
               v-if="member.profile_path"
               :src="`https://image.tmdb.org/t/p/w185/${member.profile_path}`"
@@ -67,107 +52,83 @@
         </div>
       </div>
     </div>
+
+    <div v-if="loading" class="text-center mt-4">Loading...</div>
+    <div v-if="errorMessage" class="text-red-500 mt-4">{{ errorMessage }}</div>
   </div>
 </template>
 
 <script setup>
-import { useRoute } from "vue-router";
 import { ref, onMounted, watch } from "vue";
+import { useRoute } from "vue-router";
 import { fetchMovieImages } from "../utils/fetchMovieImages";
 import { fetchMovieDetails } from "../utils/fetchMovieDetails";
 import { fetchMovieCredits } from "../utils/fetchMovieCredits";
+import { useWatchlistStore } from "../utils/watchListStore";
 import { useUserStore } from "../stores/userStore";
-import { addToWatchList } from "../utils/addToWatchList";
-import { db } from "../utils/firebase"; 
-import { collection, getDocs } from 'firebase/firestore';
 
+const watchlistStore = useWatchlistStore();
 const userStore = useUserStore();
-const movieDetails = ref({});
-const movieImages = ref([]);
+const isAlreadyAdded = ref(false);
+const movieDetails = ref(null);
 const displayedCastMembers = ref([]);
-const watchlist = ref([]);
+const movieImages = ref(null);
+const movieId = ref(null); 
+const loading = ref(false);
 const errorMessage = ref(null);
 const route = useRoute();
-const movieId = ref(null);
-const isInWatchlist = ref(false);
 
 const fetchData = async (id) => {
-  await fetchDetails(id);
-  await fetchImages(id);
-  await fetchCast(id);
-  await fetchWatchList(userStore.user?.uid); 
-};
-
-const fetchImages = async (id) => {
+  loading.value = true;
+  errorMessage.value = null;
   try {
-    await fetchMovieImages(movieImages, id);
-  } catch (err) {
-    errorMessage.value = "Failed to fetch movie images.";
-  }
-};
-
-const fetchDetails = async (id) => {
-  try {
-    await fetchMovieDetails(movieDetails, id);
-  } catch (err) {
-    errorMessage.value = "Failed to fetch movie details.";
-  }
-};
-
-const fetchCast = async (id) => {
-  try {
-    const castData = await fetchMovieCredits(id);
-    displayedCastMembers.value = castData.cast.slice(0, 5);
-  } catch (err) {
-    console.error("Failed to fetch data:", err);
-  }
-};
-
-
-
-
-
-const addMovieToWatchList = async () => {
-  if (userStore.user) {
-
-    const isAlreadyInWatchlist = watchlist.value.some(movie => movie.movieId === movieId.value);
-    if (isAlreadyInWatchlist) {
-      alert("This movie is already in your watchlist.");
-      return; 
-    }
-    await addToWatchList(userStore.user.uid, movieId.value);
-    isInWatchlist.value = true; 
-  } else {
-    alert("Please log in to add movies to your watchlist.");
-  }
-};
-
-const fetchWatchList = async (userId) => {
-  if (!userId) return; 
-  try {
-    const watchlistRef = collection(db, `users/${userId}/watchlist`);
-    const watchlistSnapshot = await getDocs(watchlistRef);
-    watchlist.value = watchlistSnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
-    
-  
-    isInWatchlist.value = watchlist.value.some(movie => movie.movieId === movieId.value);
-    
-    console.log(watchlist.value);
+    await Promise.allSettled([
+      fetchMovieImages(id).then(images => movieImages.value = images),
+      fetchMovieDetails(id).then(details => movieDetails.value = details),
+      fetchMovieCredits(id).then(castData => displayedCastMembers.value = castData.cast.slice(0, 5))
+    ]);
   } catch (error) {
-    console.error("Error fetching watchlist: ", error);
+    errorMessage.value = "Error fetching movie data";
+    console.error(error);
+  } finally {
+    loading.value = false;
   }
 };
 
-onMounted(() => {
-  movieId.value = route.params.id; 
+const handleAddBtnSubmit = async () => {
+  if (movieDetails.value?.id) {
+    try {
+      await watchlistStore.addMovieToWatchList(movieDetails.value, String(movieDetails.value.id));
+      await watchlistStore.fetchWatchlist(userStore.user.uid); 
+      console.log(watchlistStore.watchlist);
+      isAlreadyAdded.value = watchlistStore.isMovieInWatchlist; 
+    } catch (error) {
+      console.error("Failed to add movie to watchlist: ", error);
+    }
+  } else {
+    console.error("Movie ID is missing from movieDetails.");
+  }
+};
+const alreadyAddedMovie = async () => {
+  movieId.value = route.params.id;
+  if (userStore.user?.uid) {
+    await watchlistStore.fetchWatchlist(userStore.user.uid);
+  
+    isAlreadyAdded.value = watchlistStore.watchlist.some(movie => movie.movieId === movieId.value);
+    console.log(watchlistStore.watchlist);
+    console.log(isAlreadyAdded.value)
+  }
   fetchData(movieId.value);
-});
+}
+onMounted(()=>{
+alreadyAddedMovie()
+}
+);
 
 watch(() => route.params.id, (newMovieId) => {
-  movieId.value = newMovieId; 
-  fetchData(movieId.value);
+  movieId.value = newMovieId;
+  fetchData(newMovieId);
+alreadyAddedMovie();
+  
 });
 </script>
