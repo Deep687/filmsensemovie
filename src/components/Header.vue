@@ -31,14 +31,20 @@
       >
         Home
       </router-link>
-
-      <router-link v-if="currentRoute !== '/'"
-        :to="{ path: '/watchlist' }"
-        :class="{'text-teal-500': currentRoute === '/watchlist', 'text-white': currentRoute !== '/watchlist'}"
-        class="font-semibold transition duration-300"
-      >
-        Watchlist
-      </router-link>
+      <router-link
+  v-if="currentRoute !== '/'"
+  :to="{ path: '/watchlist' }"
+  :class="{
+    'text-teal-500': currentRoute === '/watchlist',
+    'text-white': currentRoute !== '/watchlist'
+  }"
+  class="flex items-center justify-center   hover:text-teal-500 transition  "
+>
+  <span class="mr-2">Watchlist</span>
+  <span class="bg-teal-500 text-white rounded-full px-2 py-1 text-xs">
+    {{ watchlist.watchlist.length }}
+  </span>
+</router-link>
 
       <p class="text-teal-400 text-sm">
         Hello, <span class="text-white font-semibold">{{ userStore.user?.displayName || 'Guest' }}</span>
@@ -55,19 +61,24 @@
 </template>
 
 <script setup>
+
 import { signOut } from "firebase/auth";
 import { auth } from "../utils/firebase"; 
 import { useRouter, useRoute } from 'vue-router'; 
 import { useUserStore } from "../stores/userStore";
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { fetchSearchMovies } from "../utils/searchMovies";
-
+import { useWatchlistStore } from "../utils/watchListStore";
+const watchlist =useWatchlistStore();
 const route = useRoute();
 const currentRoute = computed(() => route.path); 
 const movieQuery = ref("");
 const searchResults = ref([]);
 const router = useRouter();
 const userStore = useUserStore();
+
+
+  
 
 const fetchSearchData = async (query) => {
   try { 
@@ -98,6 +109,8 @@ const selectMovie = (movie) => {
   console.log('Selected movie:', movie);
   searchResults.value = [];
 };
+
+
 </script>
 
 <style scoped>

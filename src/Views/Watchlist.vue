@@ -16,7 +16,7 @@
           :key="movie.id"
           class="m-4 w-full sm:w-1/2 md:w-1/3 lg:w-1/4"
         >
-          <div class=" rounded-lg shadow-md flex overflow-hidden transition-transform transform hover:scale-105 shadow-teal-200">
+          <div class=" rounded-lg shadow-sm flex overflow-hidden transition-transform transform hover:scale-105 shadow-teal-200">
             <router-link :to="{ name: 'movieDetails', params: { id: movie.id } }">
               <img
                 :src="`https://image.tmdb.org/t/p/w500/${movie.posterPath}`"
