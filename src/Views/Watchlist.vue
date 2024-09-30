@@ -60,7 +60,7 @@
       try {
         await watchlist.fetchWatchlist();
         watchlistMovies.value = watchlist.watchlist;
-        console.log("Fetched watchlist:", watchlistMovies.value);
+       
       } catch (error) {
         console.error("Error fetching watchlist:", error);
         alert("Failed to fetch your watchlist. Please try again later.");

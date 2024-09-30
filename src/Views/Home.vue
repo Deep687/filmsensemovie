@@ -34,7 +34,8 @@ import UpcomingMovieCard from '../components/UpcomingMovieCard.vue';
 import MovieSwiper from '../components/MovieSwiper.vue';
 import { fetchMovies } from '../utils/fetchMovies';
 import { Swiper, SwiperSlide } from 'swiper/vue'; 
-
+import { useWatchlistStore } from '../utils/watchListStore';
+const watchlistStore=useWatchlistStore()
 const response = ref([]);
 const nowPlayingMoviesList = ref([]);
 const topRatedMoviesList = ref([]);
@@ -45,7 +46,8 @@ Promise.allSettled([
 fetchMovies('https://api.themoviedb.org/3/movie/upcoming?language=en-US&page=1',response),
  fetchMovies('https://api.themoviedb.org/3/movie/now_playing?language=en-US&page=1',nowPlayingMoviesList),
  fetchMovies('https://api.themoviedb.org/3/movie/top_rated?language=en-US&page=1', topRatedMoviesList),
- fetchMovies('https://api.themoviedb.org/3/movie/popular?language=en-US&page=1', popularMoviesList)])
+ fetchMovies('https://api.themoviedb.org/3/movie/popular?language=en-US&page=1', popularMoviesList)]),
+watchlistStore.fetchWatchlist()
  .then((results)=>{
 
 })

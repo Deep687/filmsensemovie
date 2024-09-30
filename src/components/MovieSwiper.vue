@@ -16,7 +16,7 @@
           
           <div class="flex justify-center">
             <router-link :to="{ name: 'movieDetails', params: { id: movie.id } }">
-            <MovieCards :data="movie" />
+            <MovieCards :data="movie" class="p-1 md:p-0" />
             </router-link>
            
           </div>

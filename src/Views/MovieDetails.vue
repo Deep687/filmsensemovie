@@ -100,7 +100,7 @@ const handleAddBtnSubmit = async () => {
     try {
       await watchlistStore.addMovieToWatchList(movieDetails.value, String(movieDetails.value.id));
       await watchlistStore.fetchWatchlist(userStore.user.uid); 
-      console.log(watchlistStore.watchlist);
+
       isAlreadyAdded.value = watchlistStore.isMovieInWatchlist; 
     } catch (error) {
       console.error("Failed to add movie to watchlist: ", error);
@@ -115,8 +115,8 @@ const alreadyAddedMovie = async () => {
     await watchlistStore.fetchWatchlist(userStore.user.uid);
   
     isAlreadyAdded.value = watchlistStore.watchlist.some(movie => movie.movieId === movieId.value);
-    console.log(watchlistStore.watchlist);
-    console.log(isAlreadyAdded.value)
+   
+   
   }
   fetchData(movieId.value);
 }
