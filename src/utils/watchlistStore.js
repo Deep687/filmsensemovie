@@ -3,6 +3,7 @@ import { db } from '../utils/firebase';
 import { collection, getDocs, addDoc, deleteDoc, doc, setDoc } from 'firebase/firestore';
 import { useUserStore } from '../stores/userStore';
 
+
 export const useWatchlistStore = defineStore('watchlist', {
   state: () => ({
     watchlist: [],
@@ -10,8 +11,10 @@ export const useWatchlistStore = defineStore('watchlist', {
   }), 
   
   actions: {
-    async fetchWatchlist(userId) {
-      if (!userId) return; 
+    async fetchWatchlist() {
+const userStore=useUserStore();
+const userId= userStore.user?.uid;
+      if (!userStore.user?.uid) return; 
       try {
         const watchlistRef = collection(db, `users/${userId}/watchlist`);
         const watchlistSnapshot = await getDocs(watchlistRef);
@@ -47,6 +50,7 @@ export const useWatchlistStore = defineStore('watchlist', {
         tagline: movieDetails.tagline,
         ratings: movieDetails.vote_average,
         releaseDate: movieDetails.release_date,
+        posterPath:movieDetails.poster_path
       };
     
       try {

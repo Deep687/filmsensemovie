@@ -6,4 +6,4 @@ export const API_HEADERS = {
   }
 };
 
-export const API_KEY = '0507a11b43f2ec8f5a83bd9325d725b0';
+export const API_KEY = import.meta.env.VITE_API_KEY;

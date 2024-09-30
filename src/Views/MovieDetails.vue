@@ -12,8 +12,8 @@
 
       <div v-if="movieDetails" class="flex-1 md:ml-4">
         <h1 class="text-3xl md:text-5xl font-bold mb-2">{{ movieDetails.title }}</h1>
-        <button @click="handleAddBtnSubmit" class="mt-2 bg-green-600 text-white px-4 py-2 rounded">
-          {{ isAlreadyAdded ? "Added" : "Add" }}
+        <button @click="handleAddBtnSubmit" class="mt-2 bg-teal-500 hover:bg-teal-800 text-white px-4 py-2 rounded">
+          {{ isAlreadyAdded ? "Added to watchlist" : "Add to watchlist" }}
         </button>
         <p class="mt-1 text-lg leading-relaxed">{{ movieDetails.tagline }}</p>
         <p class="text-gray-400 text-lg mt-1">Release Date: {{ movieDetails.release_date }}</p>
