@@ -61,14 +61,14 @@
         <button
           @click="toggleDropdown"
           type="button"
-          class="hs-dropdown-toggle py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700"
+          class="hs-dropdown-toggle py-2 px-2 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700"
           aria-haspopup="menu"
           :aria-expanded="isDropdownOpen.toString()"
           aria-label="Dropdown"
         >
-          Profile
+          <span class="text-white font-semibold">{{ userStore.user?.displayName || 'Guest' }}</span>
           <svg
-            class="hs-dropdown-open:rotate-180 size-4"
+            class="hs-dropdown-open:rotate-180 size-3"
             xmlns="http://www.w3.org/2000/svg"
             width="24"
             height="24"
@@ -85,18 +85,19 @@
 
         <div
           v-if="isDropdownOpen"
-          class="hs-dropdown-menu transition-opacity duration-300 opacity-100 min-w-60 bg-white shadow-md rounded-lg mt-1 dark:bg-neutral-800 dark:border dark:border-neutral-700 dark:divide-neutral-700 z-10 absolute right-0 top-full"
+          class="hs-dropdown-menu transition-opacity duration-300 opacity-100 min-w-36 bg-white shadow-md rounded-lg mt-1 dark:bg-neutral-800 dark:border dark:border-neutral-700 dark:divide-neutral-700 z-10 absolute right-0 top-full"
           role="menu"
           aria-orientation="vertical"
           aria-labelledby="hs-dropdown-default"
         >
           <div class="p-1 space-y-0.5">
-            <a class="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-300 dark:focus:bg-neutral-700">
-              Hello,<span class="text-white font-semibold">{{userStore.user?.displayName || 'Guest' }}</span>
-            </a>
+            <router-link :to="{ path: '/updateProfile' }">
+              <p class="bg-teal-500 text-white font-semibold p-2 rounded-lg hover:bg-teal-800 transition duration-300 text-xs md:text-sm whitespace-nowrap">Update profile</p>
+            </router-link>
+            
             <button
               @click="handleSignOut"
-              class="bg-teal-500 text-white font-semibold px-2 py-1 md:py-2 md:px-2 rounded-lg hover:bg-teal-800 transition duration-300 text-xs md:text-sm whitespace-nowrap"
+              class="m-2 bg-teal-500 text-white font-semibold px-2 py-1 md:py-2 md:px-2 rounded-lg hover:bg-teal-800 transition duration-300 text-xs md:text-sm whitespace-nowrap"
             >
               Sign out
             </button>
@@ -112,9 +113,11 @@ import { signOut } from "firebase/auth";
 import { auth } from "../utils/firebase";
 import { useRouter, useRoute } from 'vue-router';
 import { useUserStore } from "../stores/userStore";
-import { computed, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { fetchSearchMovies } from "../utils/searchMovies";
 import { useWatchlistStore } from "../utils/watchListStore";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../utils/firebase";
 
 const watchlist = useWatchlistStore();
 const route = useRoute();
@@ -127,6 +130,8 @@ const searchResults = ref([]);
 const highlightedIndex = ref(-1);
 const isSuggestionsVisible = ref(false);
 const isDropdownOpen = ref(false);
+const userData = ref(null); 
+const errorMessage = ref(''); 
 
 const fetchSearchData = async (query) => {
   if (!query || query.length < 2) {
@@ -189,26 +194,43 @@ const handleSubmit = () => {
   movieQuery.value = '';
 };
 
+const fetchUserData = async (uid) => {
+  try {
+    const userProfileRef = doc(db, 'users', uid);
+    const userDoc = await getDoc(userProfileRef);
+
+    if (userDoc.exists()) {
+      userData.value = userDoc.data();
+      console.log(userData.value)
+    } else {
+      throw new Error('No user profile found');
+    }
+  } catch (error) {
+    errorMessage.value = error.message;
+    console.error('Failed to fetch user data:', errorMessage.value);
+  }
+};
+
 const selectMovie = (movie) => {
- 
   searchResults.value = [];
-  movieQuery.value = ''; 
-  highlightedIndex.value = -1; 
-  isSuggestionsVisible.value = false; 
+  router.push({ name: 'movieDetails', params: { id: movie.id } });
 };
 
-const toggleDropdown = () => {
-  isDropdownOpen.value = !isDropdownOpen.value;
-};
 
-document.addEventListener('click', (event) => {
-  const dropdown = document.querySelector('.hs-dropdown-menu');
-  const toggleButton = document.querySelector('.hs-dropdown-toggle');
+onMounted(() => {
+  const uid = userStore.user?.uid; 
+  if (uid) {
+    fetchUserData(uid);
+  } else {
+    errorMessage.value = 'User not authenticated'; 
+  }
+});
 
-  if (isDropdownOpen.value && dropdown && toggleButton && !dropdown.contains(event.target) && !toggleButton.contains(event.target)) {
-    isDropdownOpen.value = false;
+
+watch(() => userStore.user, (newUser) => {
+  if (newUser && newUser.uid) {
+    fetchUserData(newUser.uid);
   }
 });
 </script>
 
-<style scoped></style>

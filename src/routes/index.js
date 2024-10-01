@@ -4,12 +4,13 @@ import Home from '../Views/Home.vue';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import MovieDetails from '../Views/MovieDetails.vue';
 import Watchlist from '../Views/Watchlist.vue';
-
+import UpdateProfile from '../Views/UpdateProfile.vue';
 const routes = [
   { path: '/', component: Log, meta: { requiresGuest: true } },
   { path: '/home', component: Home, meta: { requiresAuth: true } },
   { name: 'movieDetails', path: '/movieDetails/:id', component: MovieDetails },
   { path: '/watchlist', component: Watchlist, meta: { requiresAuth: true } },
+  {path:'/updateProfile', component: UpdateProfile, meta:{ requiresAuth: true}}
 ];
 
 const router = createRouter({

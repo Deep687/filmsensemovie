@@ -1,5 +1,6 @@
 <template>
   <div class="min-h-screen flex flex-col bg-gradient-to-br from-gray-900 to-black font-sans text-gray-300">
+   
     <div class="flex-grow flex items-center justify-center px-2 sm:px-4 lg:px-6">
       <div class="w-full max-w-[90%] sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl bg-gray-800 bg-opacity-50 backdrop-blur-xl rounded-2xl p-4 sm:p-6 md:p-8 shadow-2xl">
         <h2 class="text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6 text-white text-center">
@@ -10,7 +11,7 @@
             <input
               type="text"
               v-model="name"
-              class="w-full px-3 sm:px-4 pt-5 pb-2 text-xs sm:text-sm md:text-base bg-gray-700 text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition duration-300 peer"
+              class="w-full px-3 sm:px-4 pt-5 pb-2 text-xs sm:text-sm md:text-base bg-gray-700 text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-300 peer"
               id="name"
               placeholder=" "
             />
@@ -18,7 +19,7 @@
               for="name"
               class="absolute text-xs sm:text-sm text-gray-400 duration-300 transform -translate-y-3 scale-75 top-4 z-10 origin-[0] left-3 sm:left-4
                 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0
-                peer-focus:scale-75 peer-focus:-translate-y-3 peer-focus:text-teal-500"
+                peer-focus:scale-75 peer-focus:-translate-y-3 peer-focus:text-red-500"
             >
               Full Name
             </label>
@@ -27,7 +28,7 @@
             <input
               type="email"
               v-model="email"
-              class="w-full px-3 sm:px-4 pt-5 pb-2 text-xs sm:text-sm md:text-base bg-gray-700 text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition duration-300 peer"
+              class="w-full px-3 sm:px-4 pt-5 pb-2 text-xs sm:text-sm md:text-base bg-gray-700 text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-300 peer"
               id="email"
               placeholder=" "
             />
@@ -35,7 +36,7 @@
               for="email"
               class="absolute text-xs sm:text-sm text-gray-400 duration-300 transform -translate-y-3 scale-75 top-4 z-10 origin-[0] left-3 sm:left-4
                 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0
-                peer-focus:scale-75 peer-focus:-translate-y-3 peer-focus:text-teal-500"
+                peer-focus:scale-75 peer-focus:-translate-y-3 peer-focus:text-red-500"
             >
               Email Address
             </label>
@@ -44,7 +45,7 @@
             <input
               type="password"
               v-model="password"
-              class="w-full px-3 sm:px-4 pt-5 pb-2 text-xs sm:text-sm md:text-base bg-gray-700 text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition duration-300 peer"
+              class="w-full px-3 sm:px-4 pt-5 pb-2 text-xs sm:text-sm md:text-base bg-gray-700 text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-300 peer"
               id="password"
               placeholder=" "
             />
@@ -52,17 +53,17 @@
               for="password"
               class="absolute text-xs sm:text-sm text-gray-400 duration-300 transform -translate-y-3 scale-75 top-4 z-10 origin-[0] left-3 sm:left-4
                 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0
-                peer-focus:scale-75 peer-focus:-translate-y-3 peer-focus:text-teal-500"
+                peer-focus:scale-75 peer-focus:-translate-y-3 peer-focus:text-red-500"
             >
               Password
             </label>
           </div>
-          <p v-if="errorMessage" class="text-teal-500 text-xs sm:text-sm font-medium">
+          <p v-if="errorMessage" class="text-red-500 text-xs sm:text-sm font-medium">
             {{ errorMessage }}
           </p>
           <button
             type="submit"
-            class="w-full bg-gradient-to-r from-teal-500 to-teal-500 text-white py-2 sm:py-3 rounded-lg hover:from-teal-600 hover:to-teal-600 transition duration-300 font-bold shadow-lg text-xs sm:text-sm md:text-base"
+            class="w-full bg-gradient-to-r from-red-500 to-pink-500 text-white py-2 sm:py-3 rounded-lg hover:from-red-600 hover:to-pink-600 transition duration-300 font-bold shadow-lg text-xs sm:text-sm md:text-base"
           >
             {{ isLogin ? "Sign In" : "Create Account" }}
           </button>
@@ -71,7 +72,7 @@
           <span class="text-gray-400">
             {{ isLogin ? "New to FilmSense? " : "Already have an account? " }}
           </span>
-          <button @click="toggleForm" class="text-teal-400 hover:text-teal-300 font-semibold transition duration-300">
+          <button @click="toggleForm" class="text-red-400 hover:text-red-300 font-semibold transition duration-300">
             {{ isLogin ? "Create an account" : "Sign in" }}
           </button>
         </div>
@@ -82,7 +83,7 @@
 
 <script>
 import { ref } from 'vue';
-import { validations } from '../utils/Validations';
+import { validations} from '../utils/Validations';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from '../utils/firebase';
 import { useRouter } from 'vue-router';
@@ -104,50 +105,47 @@ export default {
       errorMessage.value = '';
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit = () => {
       const message = validations(isLogin.value, name.value, email.value, password.value);
       if (message) {
         errorMessage.value = message;
         return;
       }
 
-      try {
-        if (isLogin.value) {
-  
-          const userCredential = await signInWithEmailAndPassword(auth, email.value, password.value);
-          const user = userCredential.user;
-          userStore.addUser(user);
-          errorMessage.value = '';
-          router.push('/home');
-        } else {
-
-          const userCredential = await createUserWithEmailAndPassword(auth, email.value, password.value);
-          const user = userCredential.user;
-          userStore.addUser(user);
-
-          await updateProfile(auth.currentUser, {
-            displayName: name.value,
-            photoURL: "https://example.com/user/profile.jpg" 
+      if (isLogin.value) {
+        // Sign In
+        signInWithEmailAndPassword(auth, email.value, password.value)
+          .then((userCredential) => {
+            const user = userCredential.user;
+            userStore.addUser(user);
+            errorMessage.value = '';
+            router.push('/home');
+          })
+          .catch((error) => {
+            errorMessage.value = error.message;
           });
-          errorMessage.value = '';
-          router.push('/home');
-        }
-      } catch (error) {
-        errorMessage.value = handleFirebaseError(error.code);
+      } else {
+        // Sign Up
+        createUserWithEmailAndPassword(auth, email.value, password.value)
+          .then((userCredential) => {
+            const user = userCredential.user;
+            userStore.addUser(user);
+
+
+            updateProfile(auth.currentUser, {
+              displayName: name.value,
+              photoURL: "https://example.com/user/profile.jpg" 
+            }).then(() => {
+              errorMessage.value = '';
+              router.push('/home');
+            }).catch((error) => {
+              errorMessage.value = error.message;
+            });
+          })
+          .catch((error) => {
+            errorMessage.value = error.message;
+          });
       }
-    };
-
-    const handleFirebaseError = (errorCode) => {
-      const errorMessages = {
-        'auth/invalid-email': 'The email address is not valid.',
-        'auth/email-already-in-use': 'The email address is already in use by another account.',
-        'auth/user-not-found': 'No user found with this email.',
-        'auth/wrong-password': 'Incorrect password. Please try again.',
-        'auth/weak-password': 'The password is too weak. It should be at least 6 characters long.',
-      
-      };
-
-      return errorMessages[errorCode] || 'An unknown error occurred. Please try again.';
     };
 
     return {
@@ -162,5 +160,3 @@ export default {
   }
 };
 </script>
-
-<style scoped></style>
