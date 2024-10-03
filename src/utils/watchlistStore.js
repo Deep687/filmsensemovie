@@ -61,7 +61,7 @@ const userId= userStore.user?.uid;
         this.watchlist.push(movieData);
         this.isMovieInWatchlist = true;
 
-        console.log("Movie added to watchlist: ", movieData.title);
+  
       } catch (error) {
         console.error("Error adding movie to watchlist: ", error);
       }

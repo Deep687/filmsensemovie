@@ -98,6 +98,7 @@ const fetchData = async (id) => {
 const handleAddBtnSubmit = async () => {
   if (movieDetails.value?.id) {
     try {
+     
       await watchlistStore.addMovieToWatchList(movieDetails.value, String(movieDetails.value.id));
       await watchlistStore.fetchWatchlist(userStore.user.uid); 
 

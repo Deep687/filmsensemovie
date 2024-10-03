@@ -9,7 +9,9 @@
             v-model.number="formData.age"
             type="number"
             id="age"
-            class="w-3/5 mt-1 block rounded-md border-gray-300 bg-slate-700 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm p-2"
+            class="w-3/5 mt-1 block rounded-md border-gray-300 bg-slate-700 shadow-sm focus:border-teal-500 focus:ring-teal-500 
+            sm:text-sm p-2"  
+            min="18" 
           />
           <span v-if="errors.age" class="text-red-500">{{ errors.age }}</span>
         </div>
@@ -30,7 +32,7 @@
   
         <div>
           <label class="block text-sm font-medium">Hobbies:</label>
-          <div class="flex space-x-4 mt-1">
+          <div class="flex space-x-4 mt-1 ">
             <div>
               <input
                 type="checkbox"
@@ -61,9 +63,10 @@
               />
               <label for="hobby3" class="ml-2 text-sm">Gaming</label>
             </div>
+          
           </div>
         </div>
-  
+    <span v-if="errors.hobbies" class="text-red-500">{{ errors.hobbies }}</span>
         <div>
           <label class="block text-sm font-medium">Subscription:</label>
           <div class="flex space-x-4 mt-1">
@@ -102,39 +105,73 @@
   </template>
   
   <script setup>
-  import { ref } from 'vue';
+  import { onMounted, ref } from 'vue';
   import * as Yup from 'yup';
   import { db } from '../utils/firebase';
   import { auth } from '../utils/firebase';
   import { doc, setDoc } from 'firebase/firestore';
-  
+  import { useUserData } from '../utils/userData';
+
+  import { onAuthStateChanged } from 'firebase/auth';
+
+  const fetchData= async(uid) => {
+
+if (uid) {
+  await userDataStore.fetchUserData(uid);
+
+} else {
+  errorMessage.value = "User not authenticated";
+}
+}
+
+  const userDataStore = useUserData();
   const formData = ref({
     age: null,
     gender: '',
     hobbies: [],
     subscription: '',
   });
-  
   const errors = ref({});
-  
+  const currentUser = ref(null);
+
   const schema = Yup.object().shape({
     age: Yup.number()
       .required('Age is required')
       .positive('Age must be a positive number')
       .min(18, 'You must be at least 18 years old'),
     gender: Yup.string().required('Gender is required'),
+    hobbies: Yup.array()
+      .min(1, 'At least one hobby is required')
+      .required('Hobbies is required'),
     subscription: Yup.string().required('Subscription is required'),
   });
   
+  
+  onMounted(() => {
+    onAuthStateChanged(auth, async (user) => {
+      currentUser.value = user; 
+  
+      if (user) {
+        await userDataStore.fetchUserData(user.uid);
+        formData.value = { 
+          age: userDataStore.userData.age || null,
+          gender: userDataStore.userData.gender || '',
+          hobbies: userDataStore.userData.hobbies || [],
+          subscription: userDataStore.userData.subscription || '',
+        };
+      }
+    });
+  });
+  
+
   const handleSubmit = async () => {
-    errors.value = {}; 
+    errors.value = {};
   
     try {
       await schema.validate(formData.value, { abortEarly: false });
-      const user = auth.currentUser;
-
-      if (user) {
-        const userProfileRef = doc(db, 'users', user.uid);
+  
+      if (currentUser.value) {
+        const userProfileRef = doc(db, 'users', currentUser.value.uid);
         await setDoc(userProfileRef, {
           age: formData.value.age,
           gender: formData.value.gender,
@@ -145,7 +182,8 @@
       } else {
         alert('User not authenticated!');
       }
-    } catch (validationErrors) {
+
+   fetchData(currentUser.value.uid)} catch (validationErrors) {
       validationErrors.inner.forEach((error) => {
         errors.value[error.path] = error.message;
       });

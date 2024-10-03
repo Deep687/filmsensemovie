@@ -19,7 +19,7 @@
           placeholder="Search movies"
         />
       </div>
-      <ul v-if="searchResults.length && isSuggestionsVisible" class="mt-14 absolute left-0 mt-1 w-full bg-gray-800 rounded-lg shadow-lg z-20 max-h-48 overflow-y-auto">
+      <ul v-if="searchResults.length && isSuggestionsVisible" class=" absolute left-0 mt-1 w-full bg-gray-800 rounded-lg shadow-lg z-20 max-h-48 overflow-y-auto">
         <li
           v-for="(result, index) in searchResults"
           :key="index"
@@ -57,7 +57,7 @@
         </div>
       </router-link>
 
-      <div class="hs-dropdown relative inline-flex">
+      <div class="hs-dropdown relative inline-fle ">
         <button
           @click="toggleDropdown"
           type="button"
@@ -66,7 +66,7 @@
           :aria-expanded="isDropdownOpen.toString()"
           aria-label="Dropdown"
         >
-          <span class="text-white font-semibold">{{ userStore.user?.displayName || 'Guest' }}</span>
+          <span class="text-white font-semibold">Your profile </span>
           <svg
             class="hs-dropdown-open:rotate-180 size-3"
             xmlns="http://www.w3.org/2000/svg"
@@ -84,31 +84,57 @@
         </button>
 
         <div
-          v-if="isDropdownOpen"
-          class="hs-dropdown-menu transition-opacity duration-300 opacity-100 min-w-36 bg-white shadow-md rounded-lg mt-1 dark:bg-neutral-800 dark:border dark:border-neutral-700 dark:divide-neutral-700 z-10 absolute right-0 top-full"
-          role="menu"
-          aria-orientation="vertical"
-          aria-labelledby="hs-dropdown-default"
-        >
-          <div class="p-1 space-y-0.5">
-            <router-link :to="{ path: '/updateProfile' }">
-              <p class="bg-teal-500 text-white font-semibold p-2 rounded-lg hover:bg-teal-800 transition duration-300 text-xs md:text-sm whitespace-nowrap">Update profile</p>
-            </router-link>
-            
-            <button
-              @click="handleSignOut"
-              class="m-2 bg-teal-500 text-white font-semibold px-2 py-1 md:py-2 md:px-2 rounded-lg hover:bg-teal-800 transition duration-300 text-xs md:text-sm whitespace-nowrap"
-            >
-              Sign out
-            </button>
-          </div>
-        </div>
+  v-if="isDropdownOpen"
+  class="hs-dropdown-menu transition-opacity duration-300 opacity-100 min-w-36 bg-white shadow-md rounded-lg mt-1 dark:bg-neutral-800 dark:border dark:border-neutral-700 dark:divide-neutral-700 z-10 absolute right-0 top-full"
+  role="menu"
+  aria-orientation="vertical"
+  aria-labelledby="hs-dropdown-default"
+>
+  <div class="p-1 space-y-0.5 flex flex-col">
+    <span class="text-white text-sm">
+Name : {{ userStore.user.displayName }}
+    </span>
+ 
+    <span v-if="userDataStore?.userData?.age" class="text-white text-sm">
+      Age: {{ userDataStore.userData.age }}
+    </span>
+
+
+    <span v-if="userDataStore?.userData?.gender" class="text-white text-sm">
+      Gender: {{ userDataStore.userData.gender }}
+    </span>
+
+
+    <ul v-if="userDataStore?.userData?.hobbies?.length" class="text-white text-sm flex flex-ro flex-wrap">
+      Hobbies : 
+      <li v-for="(hobby, index) in userDataStore.userData.hobbies " :key="index" >
+        {{ hobby }},
+      </li>
+    </ul>
+
+    <router-link :to="{ path: '/updateProfile' }">
+      <button @click="handlebtn">  <p class="bg-teal-500 hover:bg-teal-800 text-white p-2 w-28 rounded-lg text-sm">
+        Update profile
+      </p></button>
+    
+    </router-link>
+
+    <button
+      @click="handleSignOut"
+      class="bg-red-500 hover:bg-red-800 text-white p-2 w-20 rounded-lg text-sm"
+    >
+      Sign out
+    </button>
+  </div>
+</div>
+
       </div>
     </nav>
   </header>
 </template>
 
 <script setup>
+import { onAuthStateChanged } from "firebase/auth";
 import { signOut } from "firebase/auth";
 import { auth } from "../utils/firebase";
 import { useRouter, useRoute } from 'vue-router';
@@ -116,23 +142,24 @@ import { useUserStore } from "../stores/userStore";
 import { computed, onMounted, ref, watch } from "vue";
 import { fetchSearchMovies } from "../utils/searchMovies";
 import { useWatchlistStore } from "../utils/watchListStore";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "../utils/firebase";
+import { useUserData } from "../utils/userData";
 
 const watchlist = useWatchlistStore();
 const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
-
+const currentUser=ref()
 const currentRoute = computed(() => route.path);
 const movieQuery = ref("");
 const searchResults = ref([]);
 const highlightedIndex = ref(-1);
 const isSuggestionsVisible = ref(false);
 const isDropdownOpen = ref(false);
-const userData = ref(null); 
 const errorMessage = ref(''); 
 
+const handlebtn=()=>{
+  isDropdownOpen.value = !isDropdownOpen.value;
+}
 const fetchSearchData = async (query) => {
   if (!query || query.length < 2) {
     searchResults.value = [];
@@ -148,9 +175,9 @@ const fetchSearchData = async (query) => {
   }
 };
 
-watch(movieQuery, (newQuery) => {
-  fetchSearchData(newQuery);
-});
+const toggleDropdown = () => {
+  isDropdownOpen.value = !isDropdownOpen.value;
+};
 
 const handleFocus = () => {
   if (movieQuery.value.length >= 2) {
@@ -188,49 +215,56 @@ const handleSignOut = async () => {
 };
 
 const handleSubmit = () => {
+
   if (movieQuery.value) {
     fetchSearchData(movieQuery.value);
+    movieQuery.value = '';
   }
-  movieQuery.value = '';
-};
-
-const fetchUserData = async (uid) => {
-  try {
-    const userProfileRef = doc(db, 'users', uid);
-    const userDoc = await getDoc(userProfileRef);
-
-    if (userDoc.exists()) {
-      userData.value = userDoc.data();
-      console.log(userData.value)
-    } else {
-      throw new Error('No user profile found');
-    }
-  } catch (error) {
-    errorMessage.value = error.message;
-    console.error('Failed to fetch user data:', errorMessage.value);
-  }
+ 
 };
 
 const selectMovie = (movie) => {
+
   searchResults.value = [];
   router.push({ name: 'movieDetails', params: { id: movie.id } });
+  movieQuery.value=''
 };
 
+const userDataStore = useUserData(); 
 
-onMounted(() => {
-  const uid = userStore.user?.uid; 
-  if (uid) {
-    fetchUserData(uid);
-  } else {
-    errorMessage.value = 'User not authenticated'; 
-  }
+
+
+  
+
+
+  onMounted(() => {
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+          
+            currentUser.value = user;
+
+           userDataStore.fetchUserData(currentUser.value.uid)
+         
+        
+    
+
+        } else {
+      
+            currentUser.value = null;
+        }
+    });
 });
 
+  
 
-watch(() => userStore.user, (newUser) => {
-  if (newUser && newUser.uid) {
-    fetchUserData(newUser.uid);
-  }
+
+
+
+
+watch(movieQuery, (newQuery) => {
+  fetchSearchData(newQuery);
 });
+
 </script>
+
 
