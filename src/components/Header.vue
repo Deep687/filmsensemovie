@@ -29,7 +29,7 @@
       </div>
       <ul
         v-if="searchResults.length && isSuggestionsVisible"
-        class="absolute left-0 mt-1 w-full bg-gray-800 rounded-lg shadow-lg z-20 max-h-48 overflow-y-auto"
+        class="absolute left-0  w-full bg-gray-800 rounded-lg shadow-lg z-20 max-h-48 overflow-y-auto mt-12"
       >
         <li
           v-for="(result, index) in searchResults"
