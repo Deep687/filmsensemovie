@@ -1,5 +1,5 @@
 <template>
-  <div class="p-4 bg-black text-white">
+  <div class=" h-full w-full p-4 bg-black text-white">
     <h1 class="semibold p-2 m-2 text-xl md:text-2xl">Update your profile</h1>
     <form @submit.prevent="handleSubmit" class="space-y-6">
       <div>
