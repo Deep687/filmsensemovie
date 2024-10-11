@@ -45,7 +45,7 @@
   </template>
   
   <script setup>
-  import { useWatchlistStore } from '../utils/watchListStore';
+  import { useWatchlistStore } from "../utils/watchlistStore";
   import { useUserStore } from '../stores/userStore';
   import { onMounted, ref } from 'vue';
   
